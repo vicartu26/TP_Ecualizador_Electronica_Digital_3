@@ -1,0 +1,40 @@
+# ==========================================
+# Compilación y Binarios (C/C++)
+# ==========================================
+[Dd]ebug/
+[Rr]elease/
+*.o
+*.d
+*.crf
+*.axf
+*.bin
+*.hex
+*.elf
+
+# ==========================================
+# Configuraciones Locales de IDEs (MCUXpresso, Eclipse, Keil)
+# ==========================================
+.settings/
+.project
+.cproject
+*.launch
+*.uvuser
+*.uvoptx
+
+# ==========================================
+# Python (Simulación de Filtros)
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+.ipynb_checkpoints/
+
+# ==========================================
+# Sistema Operativo y Basura General
+# ==========================================
+.DS_Store
+Thumbs.db
+*.bak
+*.tmp
