@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include "dma.h"
 
 /* =========================================================
@@ -130,6 +131,6 @@ void DMA_IRQHandler(void)
     {
         FLAGBUFFERB = 1U;
     }
-
-    direccion ^= 1U;   /* Alterna entre 0 y 1 con XOR (mas claro que if/wrap) */
+    direccion ^= 1U;   // Alterna entre 0 y 1 con XOR (mas claro que if/wrap)
+    GPDMA_ClearIntPending(GPDMA_CLR_INTTC, DMA_CH_ADC_CAPTURE); // limpio bandera
 }

@@ -28,7 +28,8 @@
  * Determina la frecuencia de muestreo de salida.
  * Ajustar segun PCLK_DAC y Fs deseada.
  * --------------------------------------------------------- */
-#define DAC_DMA_TIMEOUT   25U
+#define DAC_DMA_TIMEOUT   (DAC_PCLK_HZ / ADC_FS_HZ) - 1U
+#define DAC_PCLK_HZ 25000000UL
 
 /* ---------------------------------------------------------
  * ConfDAC
