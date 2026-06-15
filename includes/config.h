@@ -51,15 +51,17 @@ typedef struct {
 
 /* ---------------------------------------------------------
  * Buffers de audio (doble buffer ping-pong para ADC + DMA)
+ * Ahota tambien vamos a utilizar buffer pin-pong, para Memoria - DAC
  * --------------------------------------------------------- */
-extern volatile uint16_t BUFFER_SALIDA[BUFFER_SIZE];
+extern volatile uint16_t BUFFER_SALIDA_A[BUFFER_SIZE];
+extern volatile uint16_t BUFFER_SALIDA_B[BUFFER_SIZE];
 extern volatile uint16_t BUFFERA[BUFFER_SIZE];
 extern volatile uint16_t BUFFERB[BUFFER_SIZE];
 
 /* Flags seteados por DMA_IRQHandler, leidos por DSP */
 extern volatile uint8_t FLAGBUFFERA;
 extern volatile uint8_t FLAGBUFFERB;
-
+extern volatile uint8_t DAC_BUFFER_ACTIVO;
 /* ---------------------------------------------------------
  * Filtros IIR para cada banda
  * Los coeficientes deben cargarse antes de procesar audio.

@@ -49,19 +49,19 @@ void EINT3_IRQHandler(void)
     if (GPIO_GetPinIntStatus(KEYBOARD_PORT, PIN_0, GPIO_INT_FALLING))
     {
         BANDA_ACTIVA = BANDA_BAJA;
-        UART_SendByte(LPC_UART1, SELECCION_BAJOS);
+        UART_SendByte((LPC_UART_TypeDef *)LPC_UART1, SELECCION_BAJOS);
         GPIO_ClearInt(KEYBOARD_PORT, PIN_0);
     }
     else if (GPIO_GetPinIntStatus(KEYBOARD_PORT, PIN_1, GPIO_INT_FALLING))
     {
         BANDA_ACTIVA = BANDA_MEDIA;
-        UART_SendByte(LPC_UART1, SELECCION_MEDIOS);
+        UART_SendByte((LPC_UART_TypeDef *)LPC_UART1, SELECCION_MEDIOS);
         GPIO_ClearInt(KEYBOARD_PORT, PIN_1);
     }
     else if (GPIO_GetPinIntStatus(KEYBOARD_PORT, PIN_2, GPIO_INT_FALLING))
     {
         BANDA_ACTIVA = BANDA_ALTA;
-        UART_SendByte(LPC_UART1, SELECCION_AGUDOS);
+        UART_SendByte((LPC_UART_TypeDef *)LPC_UART1, SELECCION_AGUDOS);
         GPIO_ClearInt(KEYBOARD_PORT, PIN_2);
     }
 }

@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include "dma.h"
 
 /* =========================================================
@@ -12,7 +13,8 @@
  * --------------------------------------------------------- */
 static GPDMA_LLI_T LLI_ADC_A;   /* ADC -> BUFFERA */
 static GPDMA_LLI_T LLI_ADC_B;   /* ADC -> BUFFERB */
-static GPDMA_LLI_T LLI_DAC;     /* BUFFER_SALIDA -> DAC */
+static GPDMA_LLI_T LLI_DAC_A;     /* BUFFER_SALIDA -> DAC */
+static GPDMA_LLI_T LLI_DAC_B;
 
 /* ---------------------------------------------------------
  * ConfDMA_ADC_BUFFERS
@@ -28,12 +30,12 @@ void ConfDMA_ADC_BUFFERS(void)
      *   bit 21     = DST burst 1
      *   bit 27     = DST increment (avanza en el buffer)
      */
-    LLI_ADC_A.control = DMA_LLI_TRANSFER_SIZE(BUFFER_SIZE) | DMA_LLI_SRC_BSIZE_1 | DMA_LLI_DST_BSIZE_1 | DMA_LLI_DST_INC;
+    LLI_ADC_A.control = DMA_LLI_TRANSFER_SIZE(BUFFER_SIZE) | DMA_LLI_SRC_WIDTH | DMA_LLI_DST_WIDTH | DMA_LLI_DST_INC;
     LLI_ADC_A.srcAddr  = (uint32_t)(&LPC_ADC->ADGDR);
     LLI_ADC_A.dstAddr  = (uint32_t)(&BUFFERA[0]);
     LLI_ADC_A.nextLLI  = (uint32_t)(&LLI_ADC_B);
 
-    LLI_ADC_B.control = DMA_LLI_TRANSFER_SIZE(BUFFER_SIZE) | DMA_LLI_SRC_BSIZE_1 | DMA_LLI_DST_BSIZE_1 | DMA_LLI_DST_INC;
+    LLI_ADC_B.control = DMA_LLI_TRANSFER_SIZE(BUFFER_SIZE) | DMA_LLI_SRC_WIDTH | DMA_LLI_DST_WIDTH | DMA_LLI_DST_INC;
     LLI_ADC_B.srcAddr  = (uint32_t)(&LPC_ADC->ADGDR);
     LLI_ADC_B.dstAddr  = (uint32_t)(&BUFFERB[0]);
     LLI_ADC_B.nextLLI  = (uint32_t)(&LLI_ADC_A);   /* Vuelve a A -> circular */
@@ -77,26 +79,31 @@ void ConfDMA_BUFFERSALIDA_DAC(void)
 {
     /* Control word:
      *   bits[11:0] = BUFFER_SIZE
-     *   bit 18     = SRC burst 1
-     *   bit 21     = DST burst 1
+     *   bit 18     = SRC WIDTH
+     *   bit 21     = DST WIDTH
      *   bit 26     = SRC increment (avanza en BUFFER_SALIDA)
      */
-    LLI_DAC.control  = DMA_LLI_TRANSFER_SIZE(BUFFER_SIZE) | DMA_LLI_SRC_WIDTH | DMA_LLI_DST_WIDTH | DMA_LLI_SRC_INC;
-    LLI_DAC.srcAddr  = (uint32_t)(&BUFFER_SALIDA[0]);
-    LLI_DAC.dstAddr  = (uint32_t)(&LPC_DAC->DACR);
-    LLI_DAC.nextLLI  = (uint32_t)(&LLI_DAC);       /* Se apunta a si mismo -> circular */
+    LLI_DAC_A.control  = DMA_LLI_TRANSFER_SIZE(BUFFER_SIZE) | DMA_LLI_SRC_WIDTH | DMA_LLI_DST_WIDTH | DMA_LLI_SRC_INC;
+    LLI_DAC_A.srcAddr  = (uint32_t)(&BUFFER_SALIDA_A[0]);
+    LLI_DAC_A.dstAddr  = (uint32_t)(&LPC_DAC->DACR);
+    LLI_DAC_A.nextLLI  = (uint32_t)(&LLI_DAC_B);       /* Se apunta a si mismo -> circular */
+
+    LLI_DAC_B.control  = DMA_LLI_TRANSFER_SIZE(BUFFER_SIZE) | DMA_LLI_SRC_WIDTH | DMA_LLI_DST_WIDTH | DMA_LLI_SRC_INC;
+    LLI_DAC_B.srcAddr  = (uint32_t)(&BUFFER_SALIDA_B[0]);
+    LLI_DAC_B.dstAddr  = (uint32_t)(&LPC_DAC->DACR);
+    LLI_DAC_B.nextLLI  = (uint32_t)(&LLI_DAC_A);
 
     GPDMA_Channel_CFG_T dmaCfg;
     dmaCfg.channelNum  = DMA_CH_DAC_SALIDA;
     dmaCfg.transferSize = BUFFER_SIZE;
     dmaCfg.type        = GPDMA_M2P;
-    dmaCfg.srcMemAddr  = (uint32_t)(&BUFFER_SALIDA[0]);
+    dmaCfg.srcMemAddr  = (uint32_t)(&BUFFER_SALIDA_A[0]);
     dmaCfg.dstMemAddr  = (uint32_t)(&LPC_DAC->DACR);
     dmaCfg.srcConn     = 0;
     dmaCfg.dstConn     = GPDMA_DAC;
-    dmaCfg.intTC       = DISABLE;
+    dmaCfg.intTC       = DISABLE; //OJO QUIZAS DEBERIA SER ENABLE
     dmaCfg.intErr      = DISABLE;
-    dmaCfg.linkedList  = (uint32_t)(&LLI_DAC);
+    dmaCfg.linkedList  = (uint32_t)(&LLI_DAC_B);
 
     GPDMA_Endpoint_T endp;
     endp.width     = GPDMA_HALFWORD;
@@ -130,6 +137,6 @@ void DMA_IRQHandler(void)
     {
         FLAGBUFFERB = 1U;
     }
-
-    direccion ^= 1U;   /* Alterna entre 0 y 1 con XOR (mas claro que if/wrap) */
+    direccion ^= 1U;   // Alterna entre 0 y 1 con XOR (mas claro que if/wrap)
+    GPDMA_ClearIntPending(GPDMA_CLR_INTTC, DMA_CH_ADC_CAPTURE); // limpio bandera
 }

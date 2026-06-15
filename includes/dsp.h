@@ -3,6 +3,7 @@
 
 #include "config.h"
 
+
 /* =========================================================
  * dsp.h
  * Procesamiento Digital de Señales:
@@ -35,5 +36,6 @@ void Procesamiento_Senales(void);
  * @return     Muestra de salida filtrada
  * --------------------------------------------------------- */
 float FILTRO(volatile FILTRO_IIR *f, float x_0);
+void InicializarFiltros(void);
 
 #endif /* DSP_H */

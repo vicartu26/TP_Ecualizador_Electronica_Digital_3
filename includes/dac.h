@@ -1,7 +1,7 @@
 #ifndef DAC_H
 #define DAC_H
 
-#include "../config.h"
+#include "config.h"
 #include "lpc17xx_dac.h"
 
 /* =========================================================
@@ -28,7 +28,7 @@
  * Determina la frecuencia de muestreo de salida.
  * Ajustar segun PCLK_DAC y Fs deseada.
  * --------------------------------------------------------- */
-#define DAC_DMA_TIMEOUT   25U
+#define DAC_DMA_TIMEOUT 567 //ESTO CAPAZ PUEDE DAR 0
 
 /* ---------------------------------------------------------
  * ConfDAC

@@ -3,6 +3,7 @@
 /* =========================================================
  * uart.c
  * Implementacion de la configuracion UART1 y su handler.
+ * CORRECION, FUNCIONES ESPECIFICAS D ELOS DRIVERS ESPERABAN PUNTEROS DISTINTOS POR ESO UTILICE EL SIGUIENTE CASTEO (LPC_UART_TypeDef *)
  * ========================================================= */
 
 /* ---------------------------------------------------------
@@ -29,14 +30,14 @@ void ConfUART(void)
     UART_PinConfig(UART_RX1_P0_16);
 
     /* Inicializacion del periferico */
-    UART_Init(LPC_UART1, &uartCfg);
-    UART_FIFOConfig(LPC_UART1, &fifoCfg);
+    UART_Init((LPC_UART_TypeDef *)LPC_UART1, &uartCfg);
+    UART_FIFOConfig((LPC_UART_TypeDef *)LPC_UART1, &fifoCfg);
 
     /* Habilitar transmision por hardware */
-    UART_TxEnable(LPC_UART1);
+    UART_TxEnable((LPC_UART_TypeDef *)LPC_UART1);
 
     /* Habilitar interrupcion por dato recibido (RBR) */
-    UART_IntConfig(LPC_UART1, UART_INT_RBR, ENABLE);
+    UART_IntConfig((LPC_UART_TypeDef *)LPC_UART1, UART_INT_RBR, ENABLE);
 
     /* Configurar NVIC */
     NVIC_SetPriority(UART1_IRQn, UART_NVIC_PRIORITY);
@@ -59,7 +60,7 @@ void ConfUART(void)
  * --------------------------------------------------------- */
 void UART1_IRQHandler(void)
 {
-    uint8_t dato = UART_ReceiveByte(LPC_UART1);
+    uint8_t dato = UART_ReceiveByte((LPC_UART_TypeDef *)LPC_UART1);
 
     float nueva_ganancia = (float)dato / 255.0f;
 

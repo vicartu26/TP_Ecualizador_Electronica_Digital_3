@@ -20,5 +20,6 @@ void ConfDAC(void)
 
     /* Timeout = DAC_DMA_TIMEOUT ticks de PCLK_DAC
      * Determina la frecuencia de muestreo de salida. */
-    DAC_SetDMATimeOut(DAC_DMA_TIMEOUT);
+    DAC_SetDMATimeOut((uint16_t)DAC_DMA_TIMEOUT);
 }
+
