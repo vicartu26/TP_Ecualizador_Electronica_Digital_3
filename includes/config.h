@@ -4,6 +4,10 @@
 #include <stdint.h>
 #include "lpc17xx.h"         /* Registro base del microcontrolador */
 
+
+static volatile uint32_t msTicks = 0;
+
+
 /* =========================================================
  * config.h
  * Tipos, estructuras, buffers y variables globales

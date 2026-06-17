@@ -23,18 +23,19 @@
  * ========================================================= */
 
 #include "config.h"
-#include "dac/dac.h"
-#include "dma/dma.h"
-#include "uart/uart.h"
-#include "teclado/teclado.h"
-#include "dsp/dsp.h"
+#include "dac.h"
+#include "dma.h"
+#include "uart.h"
+#include "teclado.h"
+#include "dsp.h"
 
 int main(void)
 {
     /* --- Inicializacion de perifericos --- */
-    ConfDAC();                  /* 1. DAC: habilitar timer antes que el DMA */
-    ConfDMA_ADC_BUFFERS();      /* 2. DMA canal 1: ADC -> BUFFERA/BUFFERB   */
-    ConfDMA_BUFFERSALIDA_DAC(); /* 3. DMA canal 0: BUFFER_SALIDA -> DAC     */
+	InicializarFiltros();       /* 1. Cargar coeficientes de los filtros IIR antes de procesar audio */
+	ConfSysTick();              /* 2. SysTick para antirrebote de teclado (si se implementa) */
+    ConfDAC();                  /* 2. DAC: habilitar timer antes que el DMA */
+    ConfDMA_ADC_BUFFERS();      /* 3. DMA canal 1: ADC -> BUFFERA/BUFFERB   */
     ConfUART();                 /* 4. UART1: recepcion de ganancias          */
     ConfTeclado();              /* 5. Teclado: seleccion de banda            */
 

@@ -2,6 +2,7 @@
 #define TECLADO_H
 
 #include "config.h"
+#include "systick.h"
 #include "lpc17xx_gpio.h"
 #include "lpc17xx_pinsel.h"
 #include "lpc17xx_uart.h"

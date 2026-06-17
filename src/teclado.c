@@ -12,6 +12,9 @@
  * --------------------------------------------------------- */
 volatile TIPO_BANDA BANDA_ACTIVA = BANDA_BAJA;
 
+#define DEBOUNCE_MS   50u
+static volatile uint32_t lastTick0 = 0, lastTick1 = 0, lastTick2 = 0;
+
 /* ---------------------------------------------------------
  * ConfTeclado
  * --------------------------------------------------------- */
@@ -44,24 +47,42 @@ void ConfTeclado(void)
  * Identifica el pin que genero la interrupcion, actualiza
  * BANDA_ACTIVA y notifica a la PC por UART.
  * --------------------------------------------------------- */
+#define DEBOUNCE_MS   50u
+
+static volatile uint32_t lastTick0 = 0, lastTick1 = 0, lastTick2 = 0;
+
 void EINT3_IRQHandler(void)
 {
+    uint32_t now = msTicks;
+
     if (GPIO_GetPinIntStatus(KEYBOARD_PORT, PIN_0, GPIO_INT_FALLING))
     {
-        BANDA_ACTIVA = BANDA_BAJA;
-        UART_SendByte(LPC_UART1, SELECCION_BAJOS);
         GPIO_ClearInt(KEYBOARD_PORT, PIN_0);
+        if ((now - lastTick0) >= DEBOUNCE_MS)
+        {
+            lastTick0 = now;
+            BANDA_ACTIVA = BANDA_BAJA;
+            UART_SendByte((LPC_UART_TypeDef *)LPC_UART1, SELECCION_BAJOS);
+        }
     }
     else if (GPIO_GetPinIntStatus(KEYBOARD_PORT, PIN_1, GPIO_INT_FALLING))
     {
-        BANDA_ACTIVA = BANDA_MEDIA;
-        UART_SendByte(LPC_UART1, SELECCION_MEDIOS);
         GPIO_ClearInt(KEYBOARD_PORT, PIN_1);
+        if ((now - lastTick1) >= DEBOUNCE_MS)
+        {
+            lastTick1 = now;
+            BANDA_ACTIVA = BANDA_MEDIA;
+            UART_SendByte((LPC_UART_TypeDef *)LPC_UART1, SELECCION_MEDIOS);
+        }
     }
     else if (GPIO_GetPinIntStatus(KEYBOARD_PORT, PIN_2, GPIO_INT_FALLING))
     {
-        BANDA_ACTIVA = BANDA_ALTA;
-        UART_SendByte(LPC_UART1, SELECCION_AGUDOS);
         GPIO_ClearInt(KEYBOARD_PORT, PIN_2);
+        if ((now - lastTick2) >= DEBOUNCE_MS)
+        {
+            lastTick2 = now;
+            BANDA_ACTIVA = BANDA_ALTA;
+            UART_SendByte((LPC_UART_TypeDef *)LPC_UART1, SELECCION_AGUDOS);
+        }
     }
 }
